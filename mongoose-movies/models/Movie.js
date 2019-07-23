@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const celebritySchema = new Schema({
+const movieSchema = new Schema({
   title: {
     type: String,
     required: true
@@ -21,6 +21,6 @@ const celebritySchema = new Schema({
   timestamps: true
 });
 
-const Movie = mongoose.model('Movie', celebritySchema);
+const Movie = mongoose.model('Movie', movieSchema);
 
 module.exports = Movie;

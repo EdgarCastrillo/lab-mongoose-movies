@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const Celebrity = require('../models/Celebrity.js');
+const { isNotEmptyCelebrity, objectIdIsValid } = require('../middlewares/validator');
 
 router.get('/', async (req, res, next) => {
   try {
@@ -14,13 +15,13 @@ router.get('/', async (req, res, next) => {
 });
 
 router.get('/new', (req, res, next) => {
-  res.render('../views/celebrities/new');
+  res.render('celebrities/new');
 });
 
-router.post('/new', async (req, res, next) => {
+router.post('/new', isNotEmptyCelebrity, async (req, res, next) => {
   try {
     const { name, occupation, catchPhrase } = req.body;
-    const newCeleb = Celebrity.create({
+    Celebrity.create({
       name,
       occupation,
       catchPhrase
@@ -31,17 +32,17 @@ router.post('/new', async (req, res, next) => {
   }
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', objectIdIsValid, async (req, res, next) => {
   const celebId = req.params.id;
   const celeb = await Celebrity.findById(celebId);
   try {
-    res.render('../views/celebrities/show', celeb);
+    res.render('celebrities/show', celeb);
   } catch (error) {
     next(error); // busca el error que indicamos en app.js
   }
 });
 
-router.post('/:id/delete', async (req, res, next) => {
+router.post('/:id/delete', objectIdIsValid, async (req, res, next) => {
   const celebId = req.params.id;
   try {
     await Celebrity.findByIdAndRemove(celebId);
@@ -51,7 +52,7 @@ router.post('/:id/delete', async (req, res, next) => {
   }
 });
 
-router.get('/:id/edit', async (req, res, next) => {
+router.get('/:id/edit', objectIdIsValid, async (req, res, next) => {
   const celebId = req.params.id;
   const celeb = await Celebrity.findById(celebId);
   try {
@@ -61,7 +62,7 @@ router.get('/:id/edit', async (req, res, next) => {
   }
 });
 
-router.post('/:id/edit', async (req, res, next) => {
+router.post('/:id/edit', isNotEmptyCelebrity, objectIdIsValid, async (req, res, next) => {
   const celebId = req.params.id;
   try {
     const { name, occupation, catchPhrase } = req.body;
